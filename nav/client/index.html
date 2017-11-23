@@ -1,0 +1,63 @@
+<html>
+
+<head>
+    <title></title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://fb.me/react-0.14.3.js"></script>
+    <script src="https://fb.me/react-dom-0.14.3.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.25/browser.min.js"></script>
+
+    <style>
+        ul.nav {
+            
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-4">
+                <div id="nav"></div>
+            </div>
+        </div>
+    </div>
+    
+
+    <script type="text/babel">
+        var Nav = React.createClass({
+            getInitialState: function() {
+                return {current: 0};
+            },
+            clicked: function(index) {
+                this.setState({current: index});
+            },
+            render: function() {
+                var self = this;
+
+                return (
+                    <div>
+                        <ul className="nav">{this.props.menuItems.map(
+                            function(m, index) {
+                                var style = '';
+                                if (self.state.current == index) {
+                                    style = 'current';
+                                }
+                                return <li className={style} onClick={self.clicked.bind(self, index)}>{m}</li>
+                            }
+                        )}
+                        </ul>
+                        <h1>{this.props.menuItems[this.state.current]}</h1>
+                    </div>
+                )
+            }
+        });
+
+        ReactDOM.render(
+            <Nav menuItems={['Home', 'About', 'Contact']} />,
+            document.getElementById('nav')
+        );
+    </script>
+</body>
+
+</html>
