@@ -10,7 +10,14 @@
     <style>
         body{margin-top: 30px;}
         .label{margin-right: 10px;}
-        .repoItem{background:#f9f9f9;border: #f4f4f4 1px solid;padding:20px 10px;border-radius:10px;margin-bottom:10px;}
+        .repoItem{background:#f9f9f9;border: #f4f4f4 1px solid;padding:10px 10px;border-radius:10px;margin-bottom:10px;}
+        .form-control{width:450px !important; margin-right:10px;}
+		form {
+            text-align: center;
+            margin-bottom: 35px;
+            background: #f4f4f4;
+            padding:20px 10px;
+        }
     </style>
 </head>
 
@@ -25,6 +32,14 @@
 
     <script type="text/babel">
         var Profile = React.createClass({
+            handleFormSubmit: function(username) {
+                this.setState({
+                    username: username
+                }, function() {
+                    this.loadUserData();
+                    this.loadRepoData();
+                });
+            },
             getDefaultProps: function() {
                 return {
                     clientId: '5d4bd3b708ef4ccc980d',
@@ -37,14 +52,14 @@
             },
             getInitialState: function() {
                 return {
-                    userName: 'senyanghu',
+                    username: null,
                     userData: [],
                     repoData: []
                 }
             },
             loadUserData: function() {
                 $.ajax({
-                    url: this.props.urls.user + '/' + this.state.userName + '?client_id=' + this.props.clientId + '&client_secret=' + this.props.clientSecret,
+                    url: this.props.urls.user + '/' + this.state.username + '?client_id=' + this.props.clientId + '&client_secret=' + this.props.clientSecret,
                     dataType: 'json',
                     cache: 'false',
                     success: function(data) {
@@ -63,7 +78,7 @@
             },
             loadRepoData: function() {
                 $.ajax({
-                    url: this.props.urls.user + '/' + this.state.userName + '/repos?per_page='+this.props.perPage+'&client_id='+this.props.clientId+'&client_secret='+this.props.clientSecret+'&sort=created',
+                    url: this.props.urls.user + '/' + this.state.username + '/repos?per_page='+this.props.perPage+'&client_id='+this.props.clientId+'&client_secret='+this.props.clientSecret+'&sort=created',
 					dataType: 'json',
 					cache: false,
 					success: function(data){
@@ -87,6 +102,7 @@
             render: function() {
                 return (
                     <div>
+                        <SearchForm onFormSubmit={this.handleFormSubmit}/>
                         <UserInfo userData = {this.state.userData}/>
                         <Repos repoData={this.state.repoData}/>
                     </div>
@@ -120,7 +136,7 @@
                         <div className="row">
                             <div className="col-md-12">
                                 <ul className="list-group">
-                                    <li className="list-group-item"><strong>Username: </strong>{this.props.userData.login}</li>
+                                    <li className="list-group-item"><strong>username: </strong>{this.props.userData.login}</li>
                                     <li className="list-group-item"><strong>Location: </strong>{this.props.userData.location}</li>
                                     <li className="list-group-item"><strong>Email: </strong>{this.props.userData.email}</li>
                                 </ul>
@@ -154,6 +170,29 @@
 						<h4><a target="_blank" href={this.props.url}>{this.props.name}</a></h4>
 						<p>{this.props.description}</p>
 					</div>
+				)
+			}
+		});
+
+        var SearchForm = React.createClass({
+            submitForm: function(e){
+				e.preventDefault();
+				var username = this.refs.username.value.trim();
+				if(!username){
+					alert('Please Enter User');
+					return;
+				}
+				this.props.onFormSubmit(username);
+				this.refs.username.value = '';
+			},
+			render: function(){
+				return(
+                    <form onSubmit={this.submitForm} className="form-inline">
+                        <div className="form-group">
+                            <input type="text" ref="username" className="searchInput form-control " placeholder="Enter Github username" />
+                        </div>
+                        <button type="submit" className="btn btn-primary">Submit</button>
+                    </form>
 				)
 			}
 		});
